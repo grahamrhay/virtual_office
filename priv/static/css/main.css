@@ -10,6 +10,11 @@
     box-shadow: 2px 2px 3px black;
     width: 320px;
     height: 240px;
+    filter: grayscale(100%);
+    -webkit-filter: grayscale(100%);
+    -moz-filter: grayscale(100%);
+    -ms-filter: grayscale(100%);
+    -o-filter: grayscale(100%);
 }
 
 #canvas {
