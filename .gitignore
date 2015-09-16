@@ -1,0 +1,10 @@
+.vagrant/
+ebin/
+_rel/
+*.swp
+deps/
+.erlang.mk.packages.v2
+test/*.beam
+*.plt
+relx
+v_office.d
