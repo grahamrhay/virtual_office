@@ -59,6 +59,8 @@
         canvas.setAttribute('width', width);
         canvas.setAttribute('height', height);
         streaming = true;
+
+        setTimeout(takepicture, 1000);
       }
     }, false);
 
