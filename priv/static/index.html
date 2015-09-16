@@ -4,21 +4,24 @@
     <head>
         <meta charset="UTF-8">
         <title>Virtual Office</title>
+        <link rel="stylesheet" href="css/main.css">
         <script type="text/javascript" src="js/adapter.js"></script>
         <script type="text/javascript" src="js/capture.js"></script>
     </head>
 
     <body>
-        <h1>Ohai!</h1>
+        <h1>Welcome to the Virtual Office</h1>
 
-        <div class="camera">
-            <video id="video">Video stream not available.</video>
-            <button id="startbutton">Take photo</button>
-        </div>
+        <div class=content-area">
+            <div class="camera">
+                <video id="video">Video stream not available.</video>
+                <button id="startbutton">Take photo</button>
+            </div>
 
-        <canvas id="canvas"></canvas>
-        <div class="output">
-            <img id="photo" alt="The screen capture will appear in this box.">
+            <canvas id="canvas"></canvas>
+            <div class="output">
+                <img id="photo" alt="The screen capture will appear in this box.">
+            </div>
         </div>
     </body>
 </html>
