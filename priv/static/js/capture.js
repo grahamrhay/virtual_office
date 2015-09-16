@@ -23,7 +23,6 @@
     video = document.getElementById('video');
     canvas = document.getElementById('canvas');
     photo = document.getElementById('photo');
-    startbutton = document.getElementById('startbutton');
 
     navigator.getUserMedia(
       {
@@ -63,10 +62,7 @@
       }
     }, false);
 
-    startbutton.addEventListener('click', function(ev){
-      takepicture();
-      ev.preventDefault();
-    }, false);
+    setInterval(takepicture, 10000);
 
     clearphoto();
   }
