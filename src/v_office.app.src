@@ -7,7 +7,9 @@
     {applications, [
         kernel,
         stdlib,
-        cowboy
+        lager,
+        cowboy,
+        jiffy
     ]},
     {mod, {v_office_app, []}},
     {env, []}

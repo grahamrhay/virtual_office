@@ -6,6 +6,7 @@
 
 start(_Type, _Args) ->
     Dispatch = cowboy_router:compile([{'_', [
+        {"/connect", vo_connect_handler, []},
         {"/", cowboy_static, {priv_file, v_office, "static/index.html"}},
         {"/[...]", cowboy_static, {priv_dir, v_office, "static/"}}
     ]}]),
