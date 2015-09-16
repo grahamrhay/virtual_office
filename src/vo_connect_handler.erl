@@ -12,6 +12,7 @@ init({tcp, http}, _Req, _Opts) ->
     {upgrade, protocol, cowboy_websocket}.
 
 websocket_init(_Type, Req, _Opts) ->
+    ok = gen_server:call(vo_room, {join, self()}),
     {ok, Req, #{}}.
 
 websocket_handle({text, Json}, Req, State) ->

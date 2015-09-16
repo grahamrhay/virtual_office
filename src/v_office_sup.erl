@@ -8,5 +8,7 @@ start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 init([]) ->
-    Procs = [],
+    Procs = [
+        {vo_room, {vo_room, start_link, []}, permanent, 5000, worker, [vo_room]}
+    ],
     {ok, {{one_for_one, 1, 5}, Procs}}.

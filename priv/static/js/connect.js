@@ -2,10 +2,6 @@
   function startup() {
       var socket = new WebSocket("ws://" + location.host + "/connect");
 
-      socket.onopen = function() {
-          send({type: 'join'});
-      };
-
       socket.onmessage = function(ev) {
           console.log('Received data: ' + ev.data);
       };
