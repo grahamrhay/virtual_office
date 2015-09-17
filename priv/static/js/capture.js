@@ -1,4 +1,4 @@
-(function() {
+(function(V_OFFICE_WS) {
   // The width and height of the captured photo. We will set the
   // width to the value defined here, but the height will be
   // calculated based on the aspect ratio of the input stream.
@@ -96,6 +96,11 @@
 
       var data = canvas.toDataURL('image/png');
       photo.setAttribute('src', data);
+
+      V_OFFICE_WS.send({
+          type: 'snapshot',
+          data: data
+      });
     } else {
       clearphoto();
     }
@@ -104,4 +109,4 @@
   // Set up our event listener to run the startup process
   // once loading is complete.
   window.addEventListener('load', startup, false);
-})();
+})(V_OFFICE_WS);
