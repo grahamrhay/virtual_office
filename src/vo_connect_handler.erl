@@ -19,23 +19,14 @@ websocket_handle({text, Json}, Req, State) ->
     lager:info("Received frame: ~p~n", [Json]),
     Msg = jiffy:decode(Json, [return_maps]),
     Type = maps:get(<<"type">>, Msg),
-    Resp = handle_message(Type, Msg),
-    {reply, make_frame(Resp), Req, State};
+    case Type of
+        <<"snapshot">> ->
+            ok = gen_server:call(vo_room, {broadcast, Json, self()}),
+            {ok, Req, State}
+    end.
 
-websocket_handle(Frame, Req, State) ->
-    lager:error("Unexpected frame: ~p~n", [Frame]),
-    {ok, Req, State}.
-
-websocket_info(Info, Req, State) ->
-    lager:error("Unexpected msg: ~p~n", [Info]),
-    {ok, Req, State}.
-
-make_frame(Msg) ->
-    Json = jiffy:encode(Msg),
-    {text, Json}.
-
-handle_message(<<"join">>, _Msg) ->
-    #{}.
+websocket_info({broadcast, Data}, Req, State) ->
+    {reply, {text, Data}, Req, State}.
 
 websocket_terminate(_Reason, _Req, _State) ->
     ok = gen_server:call(vo_room, {leave, self()}),

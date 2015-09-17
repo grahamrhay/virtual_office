@@ -27,6 +27,11 @@ handle_call({leave, Pid}, _From, #{sessions:=Sessions} = State) ->
     lager:info("~p left room~n", [Pid]),
     {reply, ok, State#{sessions=>Sessions -- [Pid]}};
 
+handle_call({broadcast, Data, Pid}, _From, #{sessions:=Sessions} = State) ->
+    lager:info("Broadcasting ~p for ~p~n", [Data, Pid]),
+    lists:foreach(fun(SubPid) -> SubPid ! {broadcast, Data} end, Sessions -- [Pid]),
+    {reply, ok, State};
+
 handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
