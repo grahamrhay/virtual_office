@@ -21,6 +21,8 @@ init([]) ->
 
 handle_call({join, Pid}, _From, #{sessions:=Sessions} = State) ->
     lager:info("~p joined room~n", [Pid]),
+    JoinMsg = #{type=><<"joined">>, id=>list_to_binary(pid_to_list(Pid))},
+    broadcast(jiffy:encode(JoinMsg), Pid, Sessions),
     {reply, ok, State#{sessions=>[Pid|Sessions]}};
 
 handle_call({leave, Pid}, _From, #{sessions:=Sessions} = State) ->
@@ -29,7 +31,7 @@ handle_call({leave, Pid}, _From, #{sessions:=Sessions} = State) ->
 
 handle_call({broadcast, Data, Pid}, _From, #{sessions:=Sessions} = State) ->
     lager:info("Broadcasting ~p for ~p~n", [Data, Pid]),
-    lists:foreach(fun(SubPid) -> SubPid ! {broadcast, Data} end, Sessions -- [Pid]),
+    broadcast(Data, Pid, Sessions),
     {reply, ok, State};
 
 handle_call(_Request, _From, State) ->
@@ -46,3 +48,6 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
+broadcast(Data, Pid, Sessions) ->
+    lists:foreach(fun(SubPid) -> SubPid ! {broadcast, Data} end, Sessions -- [Pid]).
