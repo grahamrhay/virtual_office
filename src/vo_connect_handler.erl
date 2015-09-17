@@ -38,4 +38,5 @@ handle_message(<<"join">>, _Msg) ->
     #{}.
 
 websocket_terminate(_Reason, _Req, _State) ->
+    ok = gen_server:call(vo_room, {leave, self()}),
     ok.

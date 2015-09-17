@@ -23,6 +23,10 @@ handle_call({join, Pid}, _From, #{sessions:=Sessions} = State) ->
     lager:info("~p joined room~n", [Pid]),
     {reply, ok, State#{sessions=>[Pid|Sessions]}};
 
+handle_call({leave, Pid}, _From, #{sessions:=Sessions} = State) ->
+    lager:info("~p left room~n", [Pid]),
+    {reply, ok, State#{sessions=>Sessions -- [Pid]}};
+
 handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
