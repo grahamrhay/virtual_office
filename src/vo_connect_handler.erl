@@ -21,7 +21,8 @@ websocket_handle({text, Json}, Req, State) ->
     Type = maps:get(<<"type">>, Msg),
     case Type of
         <<"snapshot">> ->
-            ok = gen_server:call(vo_room, {broadcast, Json, self()}),
+            Data = #{type=><<"snapshot">>, data=>maps:get(<<"data">>, Msg), from=>list_to_binary(pid_to_list(self()))},
+            ok = gen_server:call(vo_room, {broadcast, jiffy:encode(Data), self()}),
             {ok, Req, State}
     end.
 
