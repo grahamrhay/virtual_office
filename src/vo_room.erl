@@ -25,6 +25,8 @@ handle_call({join, Pid}, _From, #{sessions:=Sessions} = State) ->
 
 handle_call({leave, Pid}, _From, #{sessions:=Sessions} = State) ->
     lager:info("~p left room~n", [Pid]),
+    LeftMsg = #{type=><<"left">>, id=>list_to_binary(pid_to_list(Pid))},
+    broadcast(jiffy:encode(LeftMsg), Pid, Sessions),
     {reply, ok, State#{sessions=>Sessions -- [Pid]}};
 
 handle_call({broadcast, Data, Pid}, _From, #{sessions:=Sessions} = State) ->

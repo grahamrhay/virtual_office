@@ -8,6 +8,8 @@ V_OFFICE_WS = (function() {
           var msg = JSON.parse(ev.data);
           if (msg.type === 'snapshot') {
               updateSnapshot(msg.from, msg.data);
+          } else if (msg.type === 'left') {
+              removeUser(msg.id);
           } else {
               console.error("Unexpected message: ", msg);
           }
@@ -38,6 +40,13 @@ V_OFFICE_WS = (function() {
           photo = addUser(id);
       }
       photo.setAttribute('src', data);
+  }
+
+  function removeUser(id) {
+      var photo = document.getElementById(id);
+      var div = photo.parentElement;
+      var room = document.getElementById('room');
+      room.removeChild(div);
   }
 
   return module;
