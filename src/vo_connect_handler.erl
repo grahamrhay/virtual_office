@@ -16,7 +16,6 @@ websocket_init(_Type, Req, _Opts) ->
     {ok, Req, #{}}.
 
 websocket_handle({text, Json}, Req, State) ->
-    lager:info("Received frame: ~p~n", [Json]),
     Msg = jiffy:decode(Json, [return_maps]),
     Type = maps:get(<<"type">>, Msg),
     case Type of

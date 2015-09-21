@@ -28,7 +28,6 @@ handle_call({leave, Pid}, _From, #{sessions:=Sessions} = State) ->
     {reply, ok, State#{sessions=>Sessions -- [Pid]}};
 
 handle_call({broadcast, Data, Pid}, _From, #{sessions:=Sessions} = State) ->
-    lager:info("Broadcasting ~p for ~p~n", [Data, Pid]),
     broadcast(Data, Pid, Sessions),
     {reply, ok, State};
 
