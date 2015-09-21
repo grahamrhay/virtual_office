@@ -7,9 +7,7 @@ V_OFFICE_WS = (function() {
       socket.onmessage = function(ev) {
           console.log('Received data: ' + ev.data);
           var msg = JSON.parse(ev.data);
-          if (msg.type === 'joined') {
-              addUser(msg.id);
-          } else if (msg.type === 'snapshot') {
+          if (msg.type === 'snapshot') {
               updateSnapshot(msg.from, msg.data);
           }
       };
@@ -31,10 +29,14 @@ V_OFFICE_WS = (function() {
       div.appendChild(img);
       var room = document.getElementById('room');
       room.appendChild(div);
+      return img;
   }
 
   function updateSnapshot(id, data) {
       var photo = document.getElementById(id);
+      if (!photo) {
+          photo = addUser(id);
+      }
       photo.setAttribute('src', data);
   }
 
