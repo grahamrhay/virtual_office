@@ -12,8 +12,10 @@ VO_SOCKET = (function() {
   };
 
   module.send = function(msg) {
-      var data = JSON.stringify(msg);
-      socket.send(data);
+      if (socket.readyState === 1) {
+        var data = JSON.stringify(msg);
+        socket.send(data);
+      }
   };
 
   function connect() {
