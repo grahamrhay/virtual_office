@@ -28,6 +28,7 @@ V_OFFICE_WS = (function() {
       div.setAttribute('class', 'output');
       var img = document.createElement('img');
       img.setAttribute('id', id);
+      img.setAttribute('class', 'photo');
       div.appendChild(img);
       var room = document.getElementById('room');
       room.appendChild(div);
