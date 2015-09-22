@@ -2,7 +2,9 @@ V_OFFICE_WS = (function() {
   var module = {};
 
   function startup() {
-      var socket = new WebSocket("ws://" + location.host + "/connect");
+      var protocol = location.protocol === "https:" ? "wss:" : "ws:";
+      var uri = protocol + "//" + location.host + "/connect";
+      var socket = new WebSocket(uri);
 
       socket.onmessage = function(ev) {
           var msg = JSON.parse(ev.data);
