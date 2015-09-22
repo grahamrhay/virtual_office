@@ -2,6 +2,10 @@ VO_SOCKET = (function() {
   var module = {};
   var callbacks = {};
   var socket;
+  var reconnectAttempts;
+  var MAX_RECONNECT_DELAY = 30 * 1000;
+  var protocol = location.protocol === "https:" ? "wss:" : "ws:";
+  var uri = protocol + "//" + location.host + "/connect";
 
   module.on = function(type, cb) {
       callbacks[type] = cb;
@@ -13,11 +17,24 @@ VO_SOCKET = (function() {
   };
 
   function connect() {
-      var protocol = location.protocol === "https:" ? "wss:" : "ws:";
-      var uri = protocol + "//" + location.host + "/connect";
-
       socket = new WebSocket(uri);
 
+      socket.onopen = function() {
+          reconnectAttempts = 1;
+      };
+
+      socket.onclose = function() {
+          var delay = calculateDelay(reconnectAttempts);
+          setTimeout(function() {
+              reconnectAttempts++;
+              connect();
+          }, delay);
+      };
+
+      function calculateDelay() {
+          var maxInterval = Math.min(((Math.pow(2, reconnectAttempts) - 1) * 1000), MAX_RECONNECT_DELAY);
+          return Math.random() * maxInterval;
+      }
 
       socket.onmessage = function(ev) {
           var msg = JSON.parse(ev.data);
