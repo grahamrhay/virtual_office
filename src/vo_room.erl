@@ -19,13 +19,13 @@ init([]) ->
     lager:info("Room started~n", []),
     {ok, #{sessions=>[]}}.
 
-handle_call({join, Pid}, _From, #{sessions:=Sessions} = State) ->
-    lager:info("~p joined room~n", [Pid]),
+handle_call({join, User, Pid}, _From, #{sessions:=Sessions} = State) ->
+    lager:info("~p joined room. Pid: ~p~n", [User, Pid]),
     {reply, ok, State#{sessions=>[Pid|Sessions]}};
 
-handle_call({leave, Pid}, _From, #{sessions:=Sessions} = State) ->
-    lager:info("~p left room~n", [Pid]),
-    LeftMsg = #{type=><<"left">>, id=>list_to_binary(pid_to_list(Pid))},
+handle_call({leave, User, Pid}, _From, #{sessions:=Sessions} = State) ->
+    lager:info("~p left room. Pid: ~p~n", [User, Pid]),
+    LeftMsg = #{type=><<"left">>, id=>User},
     broadcast(jiffy:encode(LeftMsg), Pid, Sessions),
     {reply, ok, State#{sessions=>Sessions -- [Pid]}};
 

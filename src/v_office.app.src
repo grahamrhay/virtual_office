@@ -9,7 +9,8 @@
         stdlib,
         lager,
         cowboy,
-        jiffy
+        jiffy,
+        uuid
     ]},
     {mod, {v_office_app, []}},
     {env, []}
