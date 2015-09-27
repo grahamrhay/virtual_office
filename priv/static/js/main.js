@@ -33,8 +33,10 @@
 
     function removeUser(id) {
         var photo = document.getElementById(id);
-        var div = photo.parentElement;
-        var room = document.getElementById('room');
-        room.removeChild(div);
+        if (photo) {
+            var div = photo.parentElement;
+            var room = document.getElementById('room');
+            room.removeChild(div);
+        }
     }
 })(VO_SOCKET);
