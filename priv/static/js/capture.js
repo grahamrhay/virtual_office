@@ -67,6 +67,11 @@
     setInterval(takepicture, 10000);
 
     clearphoto();
+
+    socket.on('joined', takepicture);
+
+    var updateButton = document.getElementById('updateButton');
+    updateButton.onclick = takepicture;
   }
 
   // Fill the photo with an indication that none has been
@@ -109,6 +114,4 @@
   // Set up our event listener to run the startup process
   // once loading is complete.
   window.addEventListener('load', startup, false);
-
-  socket.on('joined', takepicture);
 })(VO_SOCKET);
