@@ -14,6 +14,10 @@
         img.setAttribute('id', id);
         img.setAttribute('class', 'photo');
         div.appendChild(img);
+        var caption = document.createElement('div');
+        caption.setAttribute('class', caption);
+        caption.textContent = id;
+        div.appendChild(caption);
         var room = document.getElementById('room');
         room.appendChild(div);
         return img;
