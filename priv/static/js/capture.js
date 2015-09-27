@@ -64,7 +64,7 @@
       }
     }, false);
 
-    setInterval(takepicture, 10000);
+    setInterval(takepicture, 60 * 1000);
 
     clearphoto();
 
