@@ -21,6 +21,8 @@ init([]) ->
 
 handle_call({join, User, Pid}, _From, #{sessions:=Sessions} = State) ->
     lager:info("~p joined room. Pid: ~p~n", [User, Pid]),
+    JoinedMsg = #{type=><<"joined">>, id=>User},
+    broadcast(jiffy:encode(JoinedMsg), Pid, Sessions),
     {reply, ok, State#{sessions=>[Pid|Sessions]}};
 
 handle_call({leave, User, Pid}, _From, #{sessions:=Sessions} = State) ->
