@@ -15,7 +15,7 @@
         img.setAttribute('class', 'photo');
         div.appendChild(img);
         var caption = document.createElement('div');
-        caption.setAttribute('class', caption);
+        caption.setAttribute('class', 'caption');
         caption.textContent = id;
         div.appendChild(caption);
         var room = document.getElementById('room');
