@@ -9,3 +9,4 @@ test/*.beam
 *.plt
 relx
 v_office.d
+.DS_Store
