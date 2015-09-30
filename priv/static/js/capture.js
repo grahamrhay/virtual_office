@@ -18,30 +18,14 @@
   var canvas = null;
   var photo = null;
   var startbutton = null;
+  var stream;
 
   function startup() {
     video = document.getElementById('video');
     canvas = document.getElementById('canvas');
     photo = document.getElementById('photo');
 
-    navigator.getUserMedia(
-      {
-        video: true,
-        audio: false
-      },
-      function(stream) {
-        if (navigator.mozGetUserMedia) {
-          video.mozSrcObject = stream;
-        } else {
-          var vendorURL = window.URL || window.webkitURL;
-          video.src = vendorURL.createObjectURL(stream);
-        }
-        video.play();
-      },
-      function(err) {
-        console.log("An error occured! " + err);
-      }
-    );
+    startVideo();
 
     video.addEventListener('canplay', function(ev){
       if (!streaming) {
@@ -74,6 +58,28 @@
     updateButton.onclick = takepicture;
   }
 
+  function startVideo() {
+    navigator.getUserMedia(
+      {
+        video: true,
+        audio: false
+      },
+      function(s) {
+        stream = s;
+        if (navigator.mozGetUserMedia) {
+          video.mozSrcObject = stream;
+        } else {
+          var vendorURL = window.URL || window.webkitURL;
+          video.src = vendorURL.createObjectURL(stream);
+        }
+        video.play();
+      },
+      function(err) {
+        console.log("An error occured! " + err);
+      }
+    );
+  }
+
   // Fill the photo with an indication that none has been
   // captured.
 
@@ -93,6 +99,11 @@
   // other changes before drawing it.
 
   function takepicture() {
+    if (stream.active === false) {
+        startVideo();
+        return;
+    }
+
     var context = canvas.getContext('2d');
     if (width && height) {
       canvas.width = width;
