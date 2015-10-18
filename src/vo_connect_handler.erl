@@ -30,6 +30,10 @@ websocket_handle({text, Json}, Req, #{user:=User} = State) ->
         <<"snapshot">> ->
             Data = #{type=><<"snapshot">>, data=>maps:get(<<"data">>, Msg), from=>User},
             ok = gen_server:call(vo_room, {broadcast, jiffy:encode(Data), self()}),
+            {ok, Req, State};
+        <<"call">> ->
+            #{<<"who">>:=Who, <<"offer">>:=Offer} = Msg,
+            ok = gen_server:cast(vo_room, {initiate_call, Who, Offer, User}),
             {ok, Req, State}
     end.
 

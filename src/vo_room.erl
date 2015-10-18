@@ -17,19 +17,20 @@ start_link() ->
 
 init([]) ->
     lager:info("Room started~n", []),
-    {ok, #{sessions=>[]}}.
+    {ok, #{sessions=>#{}}}.
 
 handle_call({join, User, Pid}, _From, #{sessions:=Sessions} = State) ->
     lager:info("~p joined room. Pid: ~p~n", [User, Pid]),
     JoinedMsg = #{type=><<"joined">>, id=>User},
     broadcast(jiffy:encode(JoinedMsg), Pid, Sessions),
-    {reply, ok, State#{sessions=>[Pid|Sessions]}};
+    UpdatedSessions = Sessions#{User => Pid},
+    {reply, ok, State#{sessions=>UpdatedSessions}};
 
 handle_call({leave, User, Pid}, _From, #{sessions:=Sessions} = State) ->
     lager:info("~p left room. Pid: ~p~n", [User, Pid]),
     LeftMsg = #{type=><<"left">>, id=>User},
     broadcast(jiffy:encode(LeftMsg), Pid, Sessions),
-    {reply, ok, State#{sessions=>Sessions -- [Pid]}};
+    {reply, ok, State#{sessions=>maps:remove(User, Sessions)}};
 
 handle_call({broadcast, Data, Pid}, _From, #{sessions:=Sessions} = State) ->
     broadcast(Data, Pid, Sessions),
@@ -37,6 +38,13 @@ handle_call({broadcast, Data, Pid}, _From, #{sessions:=Sessions} = State) ->
 
 handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
+
+handle_cast({initiate_call, Who, Offer, From}, #{sessions:=Sessions} = State) ->
+    #{Who:=Pid} = Sessions,
+    Msg = #{type=><<"initiate_call">>, from=>From, offer=>Offer},
+    Data = jiffy:encode(Msg),
+    Pid ! {broadcast, Data},
+    {noreply, State};
 
 handle_cast(_Msg, State) ->
     {noreply, State}.
@@ -51,4 +59,4 @@ code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
 broadcast(Data, Pid, Sessions) ->
-    lists:foreach(fun(SubPid) -> SubPid ! {broadcast, Data} end, Sessions -- [Pid]).
+    lists:foreach(fun(SubPid) -> SubPid ! {broadcast, Data} end, maps:values(Sessions) -- [Pid]).

@@ -1,4 +1,4 @@
-(function(socket) {
+(function(socket, caller) {
     socket.on('snapshot', function(msg) {
         updateSnapshot(msg.from, msg.data);
     });
@@ -18,6 +18,11 @@
         caption.setAttribute('class', 'caption');
         caption.textContent = id;
         div.appendChild(caption);
+        var callButton = document.createElement('button');
+        callButton.setAttribute('class', 'callButton');
+        callButton.textContent = "Call";
+        callButton.onclick = initiateCall(id);
+        div.appendChild(callButton);
         var room = document.getElementById('room');
         room.appendChild(div);
         return img;
@@ -39,4 +44,10 @@
             room.removeChild(div);
         }
     }
-})(VO_SOCKET);
+
+    function initiateCall(id) {
+        return function() {
+            caller.call(id);
+        };
+    }
+})(VO_SOCKET, VO_CALL);
