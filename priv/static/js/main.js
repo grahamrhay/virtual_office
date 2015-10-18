@@ -9,7 +9,9 @@
 
     function addUser(id) {
         var div = document.createElement("div");
-        div.setAttribute('class', 'output');
+        div.setAttribute('class', 'user idle');
+        var video = document.createElement('video');
+        div.appendChild(video);
         var img = document.createElement('img');
         img.setAttribute('id', id);
         img.setAttribute('class', 'photo');
@@ -48,6 +50,8 @@
     function initiateCall(id) {
         return function() {
             caller.call(id);
+            var div = document.getElementById('you');
+            div.setAttribute('class', 'user inCall');
         };
     }
 })(VO_SOCKET, VO_CALL);

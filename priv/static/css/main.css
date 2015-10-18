@@ -1,8 +1,8 @@
-#video {
+.idle video, canvas {
     display: none;
 }
 
-.photo {
+.idle img {
     border: 1px solid black;
     box-shadow: 2px 2px 3px black;
     width: 320px;
@@ -14,11 +14,15 @@
     -o-filter: grayscale(100%);
 }
 
-#canvas {
+.inCall video {
+    display: block;
+}
+
+.inCall img {
     display: none;
 }
 
-.output {
+.user {
     width: 340px;
     position:relative;
     display: inline-block;
@@ -30,11 +34,11 @@
     width: 760px;
 }
 
-.output #updateButton {
+.user #updateButton {
     display:none;
 }
 
-.output:hover #updateButton {
+.user:hover #updateButton {
     display:block;
     position:absolute;
     margin-left:auto;
@@ -49,11 +53,11 @@
     color: rgba(255, 255, 255, 1.0);
 }
 
-.output .callButton {
+.user .callButton {
     display:none;
 }
 
-.output:hover .callButton {
+.user:hover .callButton {
     display:block;
     position:absolute;
     margin-left:auto;
