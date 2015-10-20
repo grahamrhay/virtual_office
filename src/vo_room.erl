@@ -40,10 +40,15 @@ handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
 handle_cast({initiate_call, Who, Offer, From}, #{sessions:=Sessions} = State) ->
-    #{Who:=Pid} = Sessions,
     Msg = #{type=><<"initiate_call">>, from=>From, offer=>Offer},
     Data = jiffy:encode(Msg),
-    Pid ! {broadcast, Data},
+    send(Data, Who, Sessions),
+    {noreply, State};
+
+handle_cast({answer_call, Who, Answer, From}, #{sessions:=Sessions} = State) ->
+    Msg = #{type=><<"answer_call">>, from=>From, answer=>Answer},
+    Data = jiffy:encode(Msg),
+    send(Data, Who, Sessions),
     {noreply, State};
 
 handle_cast(_Msg, State) ->
@@ -60,3 +65,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 broadcast(Data, Pid, Sessions) ->
     lists:foreach(fun(SubPid) -> SubPid ! {broadcast, Data} end, maps:values(Sessions) -- [Pid]).
+
+send(Data, Who, Sessions) ->
+    #{Who:=Pid} = Sessions,
+    Pid ! {broadcast, Data}.

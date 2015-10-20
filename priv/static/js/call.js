@@ -1,10 +1,11 @@
 VO_CALL = (function(socket) {
     var module = {};
+    var pc1;
 
     module.call = function(id) {
-        var pc = new RTCPeerConnection();
-        var onError = pc.close;
-        pc.onaddstream = function(obj) {
+        pc1 = new RTCPeerConnection();
+        var onError = pc1.close;
+        pc1.onaddstream = function(obj) {
             // TODO: put the video somewhere
         }
         navigator.getUserMedia(
@@ -13,10 +14,10 @@ VO_CALL = (function(socket) {
             audio: true
         },
         function(stream) {
-            pc.addStream(stream);
+            pc1.addStream(stream);
 
-            pc.createOffer(function(offer) {
-                pc.setLocalDescription(new RTCSessionDescription(offer), function() {
+            pc1.createOffer(function(offer) {
+                pc1.setLocalDescription(new RTCSessionDescription(offer), function() {
                     socket.send({type: 'call', who: id, offer: JSON.stringify(offer)});
                 }, onError);
             }, onError);
@@ -41,6 +42,15 @@ VO_CALL = (function(socket) {
             });
         }, function(err) {
             console.log("Error getting video stream: " + err);
+        });
+    });
+
+    socket.on("answer_call", function(msg) {
+        var answer = JSON.parse(msg.answer);
+        pc1.setRemoteDescription(new RTCSessionDescription(answer), function() {
+            console.log('answered call');
+        }, function(err) {
+            console.log('setRemoteDescription', err);
         });
     });
 
