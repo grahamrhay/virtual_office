@@ -2,20 +2,27 @@ VO_CALL = (function(socket) {
     var module = {};
     var pc1;
 
-    module.call = function(id) {
-        pc1 = new RTCPeerConnection();
-        var onError = pc1.close;
-        pc1.onaddstream = function(obj) {
-            // TODO: put the video somewhere
-        }
-        navigator.getUserMedia(
-        {
-            video: true,
-            audio: true
-        },
-        function(stream) {
-            pc1.addStream(stream);
+    var config= {
+        'iceServers': [
+            {'url':'stun:stun.l.google.com:19302'},
+            {'url':'stun:stun1.l.google.com:19302'},
+            {'url':'stun:stun2.l.google.com:19302'},
+            {'url':'stun:stun3.l.google.com:19302'},
+            {'url':'stun:stun4.l.google.com:19302'}
+        ]
+    };
 
+    module.call = function(id) {
+        pc1 = new RTCPeerConnection(config);
+        var onError = pc1.close;
+        pc1.onicecandidate = function(e) {
+            socket.send({type: 'ice_candidate', who: id, candidate: JSON.stringify(e.candidate)});
+        };
+        pc1.oniceconnectionstatechange = function(e) {
+            console.log('ice connection state change', e);
+        };
+        navigator.getUserMedia({video: true, audio: true}, function(stream) {
+            pc1.addStream(stream);
             pc1.createOffer(function(offer) {
                 pc1.setLocalDescription(new RTCSessionDescription(offer), function() {
                     socket.send({type: 'call', who: id, offer: JSON.stringify(offer)});
@@ -28,7 +35,13 @@ VO_CALL = (function(socket) {
     }
 
     socket.on("initiate_call", function(msg) {
-        var pc = new RTCPeerConnection();
+        var pc = new RTCPeerConnection(config);
+        pc.onicecandidate = function(e) {
+            socket.send({type: 'ice_candidate', who: msg.from, candidate: JSON.stringify(e.candidate)});
+        };
+        pc.oniceconnectionstatechange = function(e) {
+            console.log('ice connection state change', e);
+        };
         var onError = pc.close;
         navigator.getUserMedia({video: true, audio: true}, function(stream) {
             pc.addStream(stream);

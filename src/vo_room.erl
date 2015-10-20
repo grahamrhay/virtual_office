@@ -41,14 +41,17 @@ handle_call(_Request, _From, State) ->
 
 handle_cast({initiate_call, Who, Offer, From}, #{sessions:=Sessions} = State) ->
     Msg = #{type=><<"initiate_call">>, from=>From, offer=>Offer},
-    Data = jiffy:encode(Msg),
-    send(Data, Who, Sessions),
+    send(jiffy:encode(Msg), Who, Sessions),
     {noreply, State};
 
 handle_cast({answer_call, Who, Answer, From}, #{sessions:=Sessions} = State) ->
     Msg = #{type=><<"answer_call">>, from=>From, answer=>Answer},
-    Data = jiffy:encode(Msg),
-    send(Data, Who, Sessions),
+    send(jiffy:encode(Msg), Who, Sessions),
+    {noreply, State};
+
+handle_cast({ice_candidate, To, Candidate, From}, #{sessions:=Sessions} = State) ->
+    Msg = #{type=><<"ice_candidate">>, from=>From, candidate=>Candidate},
+    send(jiffy:encode(Msg), To, Sessions),
     {noreply, State};
 
 handle_cast(_Msg, State) ->

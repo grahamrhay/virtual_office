@@ -38,6 +38,10 @@ websocket_handle({text, Json}, Req, #{user:=User} = State) ->
         <<"answer">> ->
             #{<<"who">>:=Who, <<"answer">>:=Answer} = Msg,
             ok = gen_server:cast(vo_room, {answer_call, Who, Answer, User}),
+            {ok, Req, State};
+        <<"ice_candidate">> ->
+            #{<<"who">>:=Who, <<"candidate">>:=Candidate} = Msg,
+            ok = gen_server:cast(vo_room, {ice_candidate, Who, Candidate, User}),
             {ok, Req, State}
     end.
 
