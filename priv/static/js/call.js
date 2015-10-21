@@ -1,6 +1,6 @@
 VO_CALL = (function(socket) {
     var module = {};
-    var pc1;
+    var pc;
 
     var config= {
         'iceServers': [
@@ -13,18 +13,12 @@ VO_CALL = (function(socket) {
     };
 
     module.call = function(id) {
-        pc1 = new RTCPeerConnection(config);
-        var onError = pc1.close;
-        pc1.onicecandidate = function(e) {
-            socket.send({type: 'ice_candidate', who: id, candidate: JSON.stringify(e.candidate)});
-        };
-        pc1.oniceconnectionstatechange = function(e) {
-            console.log('ice connection state change', e);
-        };
+        startPeerConnection(id);
+        var onError = pc.close;
         navigator.getUserMedia({video: true, audio: true}, function(stream) {
-            pc1.addStream(stream);
-            pc1.createOffer(function(offer) {
-                pc1.setLocalDescription(new RTCSessionDescription(offer), function() {
+            pc.addStream(stream);
+            pc.createOffer(function(offer) {
+                pc.setLocalDescription(new RTCSessionDescription(offer), function() {
                     socket.send({type: 'call', who: id, offer: JSON.stringify(offer)});
                 }, onError);
             }, onError);
@@ -35,15 +29,11 @@ VO_CALL = (function(socket) {
     }
 
     socket.on("initiate_call", function(msg) {
-        var pc = new RTCPeerConnection(config);
-        pc.onicecandidate = function(e) {
-            socket.send({type: 'ice_candidate', who: msg.from, candidate: JSON.stringify(e.candidate)});
-        };
-        pc.oniceconnectionstatechange = function(e) {
-            console.log('ice connection state change', e);
-        };
+        startPeerConnection(msg.from);
         var onError = pc.close;
         navigator.getUserMedia({video: true, audio: true}, function(stream) {
+            var div = document.getElementById('you');
+            div.setAttribute('class', 'user inCall');
             pc.addStream(stream);
             var offer = JSON.parse(msg.offer);
             pc.setRemoteDescription(new RTCSessionDescription(offer), function() {
@@ -60,12 +50,37 @@ VO_CALL = (function(socket) {
 
     socket.on("answer_call", function(msg) {
         var answer = JSON.parse(msg.answer);
-        pc1.setRemoteDescription(new RTCSessionDescription(answer), function() {
+        pc.setRemoteDescription(new RTCSessionDescription(answer), function() {
             console.log('answered call');
         }, function(err) {
             console.log('setRemoteDescription', err);
         });
     });
+
+    socket.on("ice_candidate", function(msg) {
+        var candidate = JSON.parse(msg.candidate);
+        pc.addIceCandidate(new RTCIceCandidate(candidate));
+    });
+
+    function startPeerConnection(id) {
+        pc = new RTCPeerConnection(config);
+        pc.onicecandidate = function(e) {
+            console.log('ice candidate', e.candidate);
+            if (e.candidate) {
+                socket.send({type: 'ice_candidate', who: id, candidate: JSON.stringify(e.candidate)});
+            }
+        };
+        pc.oniceconnectionstatechange = function(e) {
+            console.log('ice connection state change', e);
+        };
+        pc.onaddstream = function(e) {
+            var div = document.getElementById(id).parentNode;
+            div.setAttribute('class', 'user inCall');
+            var video = div.getElementsByTagName('video')[0];
+            video.src = URL.createObjectURL(e.stream);
+            video.play();
+        };
+    }
 
     return module;
 })(VO_SOCKET);

@@ -16,6 +16,8 @@
 
 .inCall video {
     display: block;
+    width: 320px;
+    height: 240px;
 }
 
 .inCall img {
